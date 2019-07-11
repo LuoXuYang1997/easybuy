@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scce.dao.EasybuycarDao">
+
+    <resultMap id="ResultEmployee" type="Easybuycar">
+        <id property="id" column="id"/>
+        <result property="userId" column="userId"/>
+        <result property="productId" column="productId"/>
+        <result property="productNumber" column="productNumber"/>
+    </resultMap>
+<select id="SelAll" resultMap="ResultEmployee" parameterType="int">
+    select *from easybuy_buycar where userId=#{userId}
+</select>
+
+
+</mapper>

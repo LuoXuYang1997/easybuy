@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <link rel="stylesheet" type="text/css" href="../css/WdatePicker.css" />
+    <link rel="stylesheet" type="text/css" href="../css/skin_/form.css" />
+    <link href="../umeditor/themes/default/_css/umeditor.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" src="../js/global.js"></script>
+    <script type="text/javascript" src="../js/jquery.select.js"></script>
+    <script type="text/javascript" src="../js/WdatePicker.js"></script>
+    <script type="text/javascript">
+        window.UMEDITOR_HOME_URL = 'umeditor/';  // 请换成绝对路径
+    </script>
+    <script type="text/javascript" src="../js/umeditor.config.js"></script>
+    <script type="text/javascript" src="../js/editor_api.js"></script>
+    <script type="text/javascript" src="../umeditor/lang/zh-cn/zh-cn.js"></script>
+    <title>基础信息</title>
+</head>
+
+<body>
+<div id="container">
+    <div id="hd">
+    </div>
+    <div id="bd">
+        <div id="main">
+            <h2 class="subfild">
+                <span>商品添加</span>
+            </h2>
+
+            <div  class="subfild-content base-info">
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>商品编号</label>
+                    <div class="kv-item-content">
+                        <input  id="productId" type="text" placeholder="商品编号" />
+                    </div>
+                </div>
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>商品类别编号</label>
+                    <div class="kv-item-content">
+                        <select id="type">
+                            <option value="0">请选择</option>
+                            <option value="1">食品</option>
+                            <option value="2">饮料</option>
+                            <option value="3">家庭清洁</option>
+                            <option value="4">美妆</option>
+                            <option value="5">玩具</option>
+                            <option value="6">家具</option>
+                            <option value="7">手机</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>商品名称</label>
+                    <div class="kv-item-content">
+                        <input type="text" id="productName" placeholder="商品名称" />
+                    </div>
+                </div>
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>商品价格</label>
+                    <div class="kv-item-content">
+                        <input type="text" id="price" placeholder="商品价格" />
+                    </div>
+                </div>
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>库存数量</label>
+                    <div class="kv-item-content">
+                        <input type="text" id="stockNumber" placeholder="库存数量" />
+                    </div>
+                </div>
+                <div class="kv-item ue-clear time">
+                    <label><span class="impInfo">*</span>入库日期</label>
+                    <div class="kv-item-content">
+                        <input type="text" id="WarehousingDate" placeholder="入库日期" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+                        <i class="time-icon"></i>
+                    </div>
+                </div>
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>文件名称</label>
+                    <div class="kv-item-content">
+                        <input type="text" id="fileName" placeholder="文件名称" />
+                    </div>
+                </div>
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>操作人姓名</label>
+                    <div class="kv-item-content">
+                        <input type="text"  id="handlers" placeholder="操作人姓名" />
+                    </div>
+                </div>
+
+            </div>
+
+            <h2 class="subfild">
+                <span>商品详情</span>
+            </h2>
+
+            <div class="subfild-content remarkes-info">
+                <div class="kv-item ue-clear">
+                    <label><span class="impInfo">*</span>详情简介</label>
+                    <div >
+                        <textarea   placeholder="文章内容" id="productDetails" style="width:400px;height:100px;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <input class="button" id="submit" type="button" value="确认修改" />
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    //根据数据库自动填写商品编号
+
+    function selnewproductid() {
+
+
+        $.ajax({
+            url: "http://localhost:8080/EasybuyProduct/SelNewProductid",
+            type: "POST",
+            traditional: true,
+            data: {},
+
+            success: function (data) {
+
+
+                var newproduct = data.data;
+                $("#productId").val(newproduct);
+
+            }
+        })
+    }
+
+    $(function (){
+        //默认给商品编号赋值
+        selnewproductid();
+
+
+
+
+
+
+
+        //添加商品
+        $("#submit").click(function () {
+
+            var productId=$("#productId").val();
+            var index = document.getElementById("type").selectedIndex;//获取当前选择项的索引.
+            var productTypeId = document.getElementById("type").options[index].value;//获取当前选择项的值.
+            var productName=$("#productName").val();
+            var price=$("#price").val();
+            var stockNumber=$("#stockNumber").val();
+            var WarehousingDate=$("#WarehousingDate").val();
+            var fileName=$("#fileName").val();
+            var handlers=$("#handlers").val();
+            var productDetails=$("#productDetails").val();
+/*
+
+            alert("productId:"+typeof productId+"productTypeId："+typeof productTypeId+"productName："+ typeof productName+"price："+typeof price+"stockNumber："+typeof stockNumber+
+                "WarehousingDate："+typeof WarehousingDate+"fileName："+typeof  fileName+"handlers："+typeof handlers+"productDetails:"+typeof productDetails);
+*/
+
+            $.ajax({
+
+                url:"/EasybuyProduct/AddProduct",
+               /* type:"POST",*/
+               data:{
+
+                   productId:productId,
+                    productTypeId:productTypeId,
+                    productName:productName,
+                    price:price,
+                    stockNumber:stockNumber,
+                    WarehousingDate:WarehousingDate,
+                    fileName:fileName,
+                    handlers:handlers,
+                    productDetails:productDetails
+                } ,
+
+                success: function (data) {
+
+
+
+                   window.location="productquery.html";
+                }
+
+            })
+
+        })
+
+
+
+            })
+
+
+</script>
+
+
+</html>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.scce.dao.EasybuyOrderDao">
+    <resultMap id="ResultMapper" type="EasybuyOrder">
+        <id property="id" column="id"/>
+        <result property="orderid" column="orderid"/>
+        <result property="creationdate" column="creationdate"/>
+        <result property="productdetails" column="productdetails"/>
+        <result property="price" column="price"/>
+        <result property="productnumber" column="productnumber"/>
+        <result property="totalprice" column="totalprice"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <insert id="addProductdetails" parameterType="EasybuyOrder">
+
+
+INSERT INTO `easybuy`.`easybuy_order`
+(`id`, `orderId`, `creationDate`, `productDetails`, `price`, `productNumber`, `Totalprice`, `status`) VALUES
+(null,#{orderId},#{creationdate},#{productdetails},#{price},#{productnumber},#{totalprice},#{status})
+   </insert>
+
+
+    <!--根据商品名称和时间查询商品的数量-->
+    <select id="EasybuyOrder" resultType="integer" parameterType="map">
+     select SUM(productnumber) from easybuy_order where productdetails=#{productDetails} and creationdate like #{date}
+    </select>
+    <!--查询所有-->
+    <select id="SelAll" resultMap="ResultMapper">
+     select * from easybuy_order
+    </select>
+    <!--根据月份查询订单总数-->
+    <select id="MonthAll" resultType="integer" parameterType="String">
+     select SUM(productnumber) from easybuy_order where creationdate like #{date1}
+    </select>
+
+    <select id="orderselall" resultMap="ResultMapper" >
+        select * from `easybuy_order`
+
+    </select>
+
+
+
+</mapper>

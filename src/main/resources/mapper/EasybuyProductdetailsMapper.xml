@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.scce.dao.EasybuyProductdetailsDao">
+    <resultMap id="Productdetails" type="com.scce.pojo.EasybuyProductdetails">
+        <id property="id" column="id"/>
+        <result property="realname" column="realName"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="orderId" column="orderId"/>
+        <result property="creationdate" column="creationDate"/>
+        <result property="productdetails" column="productDetails"/>
+        <result property="price" column="price"/>
+        <result property="productnumber" column="productNumber"/>
+        <result property="freight" column="freight"/>
+        <result property="totalprice" column="Totalprice"/>
+        <result property="status" column="status"/>
+<!--association: 一对一关联(has one)
+collection:一对多关联(has many)-->
+        <association property="easybuyProduct" column="productDetails"
+                     select="com.scce.dao.EasybuyProductDao.Easybuyproductdetails" >
+        </association>
+    </resultMap>
+
+
+    <insert id="addProductdetails" parameterType="com.scce.pojo.EasybuyProductdetails">
+
+INSERT INTO `easybuy`.`easybuy_orderdetails`
+(`id`, `realName`, `phone`, `address`, `orderId`, `creationDate`, `productDetails`, `price`, `productNumber`, `freight`, `Totalprice`, `status`) VALUES
+ (null,#{realname},#{phone},#{address},#{orderId},#{creationdate},#{productdetails},#{price},#{productnumber},#{freight},#{totalprice},#{status})
+    </insert>
+
+<select id="productdetailsselall" resultMap="Productdetails">
+        select * from `easybuy_orderdetails`
+
+    </select>
+
+    <select id="SelectOrderByUserName" parameterType="map" resultMap="Productdetails">
+
+        select * from easybuy_orderdetails where  realName=#{username}
+
+
+            <if test="oederId!='' and oederId!=null">
+                and  orderId=#{oederId}
+            </if>
+
+    </select>
+
+
+
+
+</mapper>

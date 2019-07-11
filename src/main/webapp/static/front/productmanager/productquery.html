@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+
+    <link rel="stylesheet" type="text/css" href="../../bootstrap/frame/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../../bootstrap/frame/bootstrap2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="../../bootstrap/frame/bootstrap-table-master/src/bootstrap-table.css">
+    <link rel="stylesheet" type="text/css"
+          href="../../bootstrap/frame/bootstrap3-editable-1.5.1/bootstrap3-editable/css/bootstrap-editable.css"> <!--行内编辑-->
+    <link rel="stylesheet" type="text/css" href="../../bootstrap/frame/bootstrap-fileinput-master/css/fileinput.css">
+
+    <script src="../../bootstrap/frame/jquery/jquery-3.3.1.js"></script>
+    <script src="../../bootstrap/frame/layer/layer.js"></script>
+    <script src="../../bootstrap/frame/bootstrap-table-master/src/bootstrap-table.js"></script>
+
+    <script src="../../bootstrap/frame/bootstrap3-editable-1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script> <!--行内编辑-->
+    <script src="../../bootstrap/frame/bootstrap-table-master/src/locale/bootstrap-table-zh-CN.js"></script>
+    <script src="../../bootstrap/frame/bootstrap-table-master/dist/extensions/editable/bootstrap-table-editable.min.js"></script> <!--行内编辑-->
+    <script src="../../bootstrap/frame/bootstrap2/js/bootstrap.min.js"></script>
+
+
+    <!-- easyui 所需-->
+    <!-- <link href="../../css/style.css" rel="stylesheet" type="text/css" />
+     <script type="text/javascript" src="../../js/jquery.js"></script>-->
+
+    <!-- <script src="http://cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.js"></script>-->
+
+
+</head>
+<body>
+
+<div>
+    <table>
+        <tr>
+
+            <td class="zi"><span id="Exp" style="cursor:pointer">导出表格&nbsp;&nbsp;</span></td>
+            <td class="zi"><span>选择商品类型：</span></td>
+
+            <td>
+                <select id="type">
+                    <option value="0">请选择</option>
+                    <option value="1">食品</option>
+                    <option value="2">饮料</option>
+                    <option value="3">家庭清洁</option>
+                    <option value="4">美妆</option>
+                    <option value="5">玩具</option>
+                    <option value="6">家具</option>
+                    <option value="7">手机</option>
+                </select>
+            </td>
+            <td>价格:</td>
+            <td><input type="text"  id="priceles" style="width: 50px;height: 20px" >-<input type="text"   id="pricemor" style="width: 50px ;height: 20px" ></td>
+            <td class="zi"><span>商品名称：</span></td>
+            <td>
+                <input type="text" id="productname" style="width: 300px ;height: 23px "   onfocus="javascript:if(this.value=='请输入内容')this.value='';" >
+            </td>
+            <td><input id="selbtn" type="button" value="查询" class="button"/></td>
+        </tr>
+    </table>
+
+    <div id="toolbar" class="btn-group">
+        <button id="btn_insert" type="button" class="btn btn-warning">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+        </button>
+    </div>
+
+<div>
+    <table id="page">
+
+    </table>
+</div>
+
+    <script>
+       /* 删除完成后需要回调 initTable()方法所以需要但是直接回调会返回第一页
+       *  所以需要定义全局变量pageNumber,pageSize这样才能从删除方法中获取到当前页的pageNumber,pageSize
+       * */
+        var num=1;
+        var size=5;
+
+        $(function (){
+
+
+
+
+            //获取下拉框选择的商品类别id
+            $("#selbtn").click(function () {
+                //alert("进入selbtn")
+               var index = document.getElementById("type").selectedIndex;//获取当前选择项的索引.
+                //alert(index);
+                var typeid = document.getElementById("type").options[index].value;//获取当前选择项的值.
+                // alert(typeid);
+                 var productname = $("#productname").val();//商品编号
+                //alert(productname);
+                  var priceles = $("#priceles").val();//获得钱少的值
+                // alert(priceles);
+                  var pricemor= $("#pricemor").val();//获得钱多的值
+                  //alert(pricemor);
+                // alert("productname:"+typeof productname+productname);
+                 //alert("typeid:"+typeof typeid+"productname:"+typeof productname+"priceles:"+ typeof priceles+"pricemor:"+ typeof pricemor);
+                 initTable(1,3,typeid, productname,priceles,pricemor);//调用函数，初始化表格
+            });
+
+            //导出表格
+            $("#Exp").click(function () {
+
+
+                window.open("/EasybuyProduct/ProductExptab");
+
+            });
+
+
+            //给添加按钮注册方法
+            $("#btn_insert").click(function () {
+
+                window.location="productadd.html";
+
+                            });
+
+
+            initTable(num,size,null,null,null,null);
+
+          });
+
+
+        function initTable(pageNumber,pageSize,typeid, productname,priceles,pricemor) {
+
+
+            $("#page").bootstrapTable('destroy');
+            $("#page").bootstrapTable({
+                url: 'http://localhost:8080/EasybuyProduct/ProductSelAll',
+                editable: true,
+                //clickToSelect: true,//点击选中
+                cache : false,
+                smartDisplay: false,
+                method: 'post',
+                toolbar: "#toolbar",
+                striped: true, // 是否显示行间隔色 //search : "true",
+                sidePagination: "server",
+                pageNumber: pageNumber, //初始化加载第一页，默认第一页
+                pageList: [5, 10, 15, 20],//可供选择的每页的行数
+                pageSize: pageSize,//初始默认每页行数
+                pagination: true,
+                showRefresh: true,//刷新
+                showPaginationSwitch: true,//是否隐藏分页条
+                showToggle: true, //是否显示详细视图和列表视图的切换按钮
+
+
+                contentType: "application/x-www-form-urlencoded",
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                queryParamsType: "limit",//设置为 ‘limit’ 则会发送符合 RESTFul 格式的参数.
+                sortable: true, // 是否启用排序
+                // queryParams: queryParams, //queryParams为参数设置的函数
+
+                queryParams: function (params) {
+                    /*
+                      int startNo = (currentPage-1)*pageSize;//起始行
+                      int CurrentPage=1;//设置当前需要访问的页码
+                      int pageSize=5;//设置每页需要查询几条数据
+                     */
+
+                    //把当前页数和每页大小存起来
+                    num=params.offset / params.limit + 1;
+                    size= params.limit;
+                    return {
+                        //这里的params是ta
+
+                        // 3ble提供的
+                        priceles: priceles,
+                        pricemor: pricemor,
+                        typeid: typeid,
+                        productname: productname,
+                        pageNum: (params.offset / params.limit) + 1, //当前页面,默认是上面设置的1(pageNumber)
+                        pageSize: params.limit //每一页的数据行数，默认是上面设置的5(pageSize)
+                    };
+                },
+                columns: [
+
+
+                    {
+                        checkbox: true
+                    }, {
+                        field: 'id',
+                        title: '序号'
+
+
+                    },
+                    {
+                        field: 'productid',
+                        title: '商品编号',
+                        mode: 'inline'
+
+
+                    },
+                    {
+                        field: 'producttypeid',
+                        title: '商品类别编号'
+
+                    },
+                    {
+                        field: 'productname',
+                        title: '商品名称',
+                        editable:{
+                            type:'text',
+                            title:'商品名称',
+                            mode: 'inline',
+                            validate:function (v) {
+                                if (!v){
+                                    return "内容不能为空";
+                                }
+
+                            }
+                        }
+
+
+                    },
+                    {
+                        field: 'productdetails',
+                        title: '商品详情',
+                        editable:{
+                            type:'text',
+                            title:'商品详情',
+                            mode: 'inline',
+                            validate:function (v) {
+                                if (!v){
+                                    return "内容不能为空";
+                                }
+
+                            }
+                        }
+
+                    },
+                    {
+                        field: 'price',
+                        title: '商品价格',
+                        editable:{
+                            type:'text',
+                            title:'商品详情',
+                            mode: 'inline',
+                            validate:function (v) {
+                                if (!v){
+                                    return "内容不能为空";
+                                }
+
+                            }
+                        }
+                    },
+                    {
+                        field: 'stocknumber',
+                        title: '库存数量',
+                        editable:{
+                            type:'text',
+                            title:'商品详情',
+                            mode: 'inline',
+                            validate:function (v) {
+                                if (!v){
+                                    return "内容不能为空";
+                                }
+
+                            }
+                        }
+                    },
+                    {
+                        field: 'warehousingdate',
+                        formatter: function (value, row, index) {
+                            return changeDateFormat(value)
+                        },
+                        title: '入库日期'
+
+
+                    },
+                    {
+                        field: 'filename',
+                        title: '文件名称',
+                        editable:{
+                            type:'text',
+                            title:'文件名称',
+                            validate:function (v) {
+                                if (!v){
+                                    return "内容不能为空";
+                                }
+
+                            }
+                        }
+
+                    },
+                    {
+                        field: 'handlers',
+                        title: '操作人姓名',
+                        editable:{
+                            type:'text',
+                            title:'操作人姓名',
+                            validate:function (v) {
+                                if (!v){
+                                    return "内容不能为空";
+                                }
+
+                            }
+                        }
+
+
+                    },
+
+
+                    {
+                        field: '',
+                        title: '操作',
+                        align: 'center',
+                        events: operateEvents,//给按钮注册事件
+                        formatter: addFunctionAlty//表格中增加按钮addFunctionAlty
+                    }
+
+                ],
+                onEditableSave: function (field, row, oldValue, $el) {
+
+
+                    warehousingdateStr= changeDateFormat(row.warehousingdate);
+
+
+                    $.ajax({
+                        type: "post",
+                        url: "/EasybuyProduct/UpdateProduct",
+                        data: {
+                        "productid"  :row.productid,
+                        "producttypeid"  : row.producttypeid,
+                        "productname"   : row.productname,
+                        "productdetails"    : row.productdetails,
+                        "price"     : row.price,
+                        "stocknumber"     : row.stocknumber,
+                        "warehousingdateStr" : warehousingdateStr,
+                        "filename"    : row.filename,
+                        "handlers"    : row.handlers
+
+
+                        },
+                        success: function (data, status) {
+
+
+                        }
+
+                    })
+                },
+                onLoadSuccess: function () {  //加载成功时执行
+                    console.info("加载数据成功");
+
+                },
+                onLoadError: function () {  //加载失败时执行
+                    console.info("加载数据失败");
+                }
+
+
+
+
+
+            });
+
+        }
+
+
+
+
+        //添加操作按钮
+        function addFunctionAlty(value, row, index) { //要进行的操作 操作函数
+            // 修改按钮、删除按钮
+            return [
+
+
+                '<button id="btn_delete" style="margin-left: 5px" class="btn btn-danger">删除</button>'
+            ].join('');
+        }
+
+
+        //给操作按钮注册事件
+        window.operateEvents = {
+
+
+            //删除事件
+            'click #btn_delete': function (e, value, row, index) {
+
+                $.ajax({
+                    type: "post",
+                    url: "/EasybuyProduct/DelProductbyid",
+                    data: {
+
+                        "productid": row.productid
+                    },
+                    success: function (data, status) {
+
+                        initTable(num,size,null,null,null,null);
+                    }
+
+                })
+
+            }
+
+
+
+
+        };
+
+
+        //转换日期格式
+        function changeDateFormat(time) {
+            var d = new Date(time);
+            var year = d.getFullYear();       //年
+            var month = d.getMonth() + 1;     //月
+            var day = d.getDate();            //日
+            var hh = d.getHours();            //时
+            var mm = d.getMinutes();          //分
+            var ss = d.getSeconds();           //秒
+            var clock = year + "-";
+            if (month < 10)
+                clock += "0";
+            clock += month + "-";
+            if (day < 10)
+                clock += "0";
+            clock += day + " ";
+            if (hh < 10)
+                clock += "0";
+            clock += hh + ":";
+            if (mm < 10) clock += '0';
+            clock += mm + ":";
+            if (ss < 10) clock += '0';
+            clock += ss;
+            return (clock);
+        }
+
+
+
+
+    </script>
+
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

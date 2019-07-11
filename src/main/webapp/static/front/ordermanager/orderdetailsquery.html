@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+
+    <link rel="stylesheet" type="text/css" href="../../bootstrap/frame/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../../bootstrap/frame/bootstrap2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="../../bootstrap/frame/bootstrap-table-master/src/bootstrap-table.css">
+    <link rel="stylesheet" type="text/css"
+          href="../../bootstrap/frame/bootstrap3-editable-1.5.1/bootstrap3-editable/css/bootstrap-editable.css"> <!--行内编辑-->
+    <link rel="stylesheet" type="text/css" href="../../bootstrap/frame/bootstrap-fileinput-master/css/fileinput.css">
+
+    <script src="../../bootstrap/frame/jquery/jquery-3.3.1.js"></script>
+    <script src="../../bootstrap/frame/layer/layer.js"></script>
+    <script src="../../bootstrap/frame/bootstrap-table-master/src/bootstrap-table.js"></script>
+
+    <script src="../../bootstrap/frame/bootstrap3-editable-1.5.1/bootstrap3-editable/js/bootstrap-editable.js"></script> <!--行内编辑-->
+    <script src="../../bootstrap/frame/bootstrap-table-master/src/locale/bootstrap-table-zh-CN.js"></script>
+    <script src="../../bootstrap/frame/bootstrap-table-master/dist/extensions/editable/bootstrap-table-editable.min.js"></script> <!--行内编辑-->
+    <script src="../../bootstrap/frame/bootstrap2/js/bootstrap.min.js"></script>
+
+
+    <!-- easyui 所需-->
+    <!-- <link href="../../css/style.css" rel="stylesheet" type="text/css" />
+     <script type="text/javascript" src="../../js/jquery.js"></script>-->
+
+    <!-- <script src="http://cdn.bootcss.com/jqueryui/1.11.4/jquery-ui.js"></script>-->
+
+
+</head>
+<body>
+
+<div>
+
+    <div>
+
+
+        <div id="toolbar" class="btn-group">
+            <button id="Exp" type="button" class="btn btn-warning">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>导出表格
+            </button>
+        </div>
+
+    </div>
+
+
+    <div>
+
+        <table id="page">
+
+        </table>
+        
+
+    </div>
+
+    <script>
+        /* 删除完成后需要回调 initTable()方法所以需要但是直接回调会返回第一页
+        *  所以需要定义全局变量pageNumber,pageSize这样才能从删除方法中获取到当前页的pageNumber,pageSize
+        * */
+
+        $(function (){
+
+
+
+            //导出表格
+            $("#Exp").click(function () {
+
+                window.open("/EasybuyProductdetails/ProductdetailsExptab");
+
+            });
+
+
+            initTable();
+
+        });
+
+
+        function initTable() {
+
+
+            $("#page").bootstrapTable('destroy');
+            $("#page").bootstrapTable({
+                url: '/EasybuyProductdetails/ProductdetailsSelAll',
+                editable: true,
+                //clickToSelect: true,//点击选中
+                cache : false,
+                smartDisplay: false,
+                method: 'post',
+                toolbar: "#toolbar",
+                striped: true, // 是否显示行间隔色 //search : "true",
+                sidePagination: "server",
+                pageNumber: 1, //初始化加载第一页，默认第一页
+                pageList: [5, 10, 15, 20],//可供选择的每页的行数
+                pageSize: 3,//初始默认每页行数
+                pagination: true,
+                showRefresh: true,//刷新
+                showPaginationSwitch: true,//是否隐藏分页条
+                showToggle: true, //是否显示详细视图和列表视图的切换按钮
+
+
+                contentType: "application/x-www-form-urlencoded",
+                paginationPreText: "上一页",
+                paginationNextText: "下一页",
+                queryParamsType: "limit",//设置为 ‘limit’ 则会发送符合 RESTFul 格式的参数.
+                sortable: true, // 是否启用排序
+                // queryParams: queryParams, //queryParams为参数设置的函数
+
+                queryParams: function (params) {
+                    /*
+                      int startNo = (currentPage-1)*pageSize;//起始行
+                      int CurrentPage=1;//设置当前需要访问的页码
+                      int pageSize=5;//设置每页需要查询几条数据
+                     */
+
+                    //把当前页数和每页大小存起来
+                    num=params.offset / params.limit + 1;
+                    size= params.limit;
+                    return {
+                        //这里的params是ta
+                        pageNum: (params.offset / params.limit) + 1, //当前页面,默认是上面设置的1(pageNumber)
+                        pageSize: params.limit //每一页的数据行数，默认是上面设置的5(pageSize)
+                    };
+                },
+                columns: [
+
+
+                    {
+                        checkbox: true
+                    }, {
+                        field: 'id',
+                        title: '序号'
+
+
+                    },
+                    {
+                        field: 'orderId',
+                        title: '订单编号',
+                        mode: 'inline'
+
+
+                    },
+                    {
+                        field: 'creationdate',
+                        title: '下单时间'
+
+                    },
+                    {
+                        field: 'productdetails',
+                        title: '商品详情'
+
+
+                    },
+                    {
+                        field: 'price',
+                        title: '商品价格'
+
+
+                    },
+                    {
+                        field: 'productnumber',
+                        title: '商品数量'
+
+                    },
+                    {
+                        field: 'totalprice',
+                        title: '总价格'
+
+                    },
+                    {
+                        field: 'status',
+                        title: '入库日期',
+                        formatter: function (value, row, index) {
+                            return changeDateFormat(value)
+                        }
+                    },
+
+                    {
+                        field: 'realname',
+                        title: '真实姓名'
+
+                    },
+                    {
+                        field: 'phone',
+                        title: '电话号码'
+
+                    },
+                    {
+                        field: 'address',
+                        title: '地址'
+
+                    },  {
+                        field: 'freight',
+                        title: '运费'
+
+                    }
+
+
+
+                ],
+
+                onLoadSuccess: function () {  //加载成功时执行
+                    console.info("加载数据成功");
+
+                },
+                onLoadError: function () {  //加载失败时执行
+                    console.info("加载数据失败");
+                }
+
+
+
+
+
+            });
+
+        }
+
+
+
+
+
+
+
+
+        //转换日期格式
+        function changeDateFormat(time) {
+            var d = new Date(time);
+            var year = d.getFullYear();       //年
+            var month = d.getMonth() + 1;     //月
+            var day = d.getDate();            //日
+            var hh = d.getHours();            //时
+            var mm = d.getMinutes();          //分
+            var ss = d.getSeconds();           //秒
+            var clock = year + "-";
+            if (month < 10)
+                clock += "0";
+            clock += month + "-";
+            if (day < 10)
+                clock += "0";
+            clock += day + " ";
+            if (hh < 10)
+                clock += "0";
+            clock += hh + ":";
+            if (mm < 10) clock += '0';
+            clock += mm + ":";
+            if (ss < 10) clock += '0';
+            clock += ss;
+            return (clock);
+        }
+
+
+
+
+    </script>
+
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

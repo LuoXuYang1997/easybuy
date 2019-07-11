@@ -1,0 +1,24 @@
+#数据库连接信息
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/easybuy?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: root
+    password: root
+#配置mybatis信息
+#spring集成Mybatis环境
+#pojo别名包扫描
+#加载Mybatis映射文件
+mybatis:
+  type-aliases-package: com.scce.pojo
+  mapper-locations:  mapper/*Mapper.xml
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.scce.dao.EasybuyEmployeeRoleDao">
+
+    <resultMap id="ResultEmployeeRole" type="easybuyEmployeeRole">
+        <id column="employee_id" property="employeeid"/>
+        <result column="role_id" property="roleid"/>
+    </resultMap>
+
+
+    <select id="SelectEasybuyEmployeeRoleByemployeeid" resultMap="ResultEmployeeRole" parameterType="int">
+        select * from easybuy_employee_role where employee_id=#{employeeid}
+    </select>
+</mapper>

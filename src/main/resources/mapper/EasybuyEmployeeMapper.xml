@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scce.dao.EasybuyEmployeeDao">
+
+    <resultMap id="ResultEmployee" type="EasybuyEmployee">
+        <id property="id" column="id"/>
+        <result property="employeeid" column="employeeId"/>
+        <result property="employeename" column="employeeName"/>
+        <result property="password" column="password"/>
+        <result property="realname" column="realName"/>
+        <result property="sex" column="sex"/>
+        <result property="birthday" column="birthday"/>
+        <result property="idcard" column="idCard"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+    </resultMap>
+
+
+    <!--根据id查询员工-->
+    <select id="SelectEmployeeById" resultMap="ResultEmployee" parameterType="int">
+        select * from easybuy_employee where id=#{id}
+    </select>
+
+    <!--根据账号查询员工-->
+    <select id="SelectEmployeeByEmployeeName" resultMap="ResultEmployee" parameterType="String">
+        select * from easybuy_employee where employeeName=#{employeeName}
+    </select>
+
+    <!--根据账号密码查询用户-->
+    <select id="login" resultMap="ResultEmployee" parameterType="EasybuyEmployee">
+        select * from easybuy_employee where employeeName=#{employeename} and password=#{password}
+    </select>
+    <!--查询员工信息-->
+    <select id="SelectEmployee" resultMap="ResultEmployee" parameterType="easybuyEmployee">
+        select * from easybuy_employee
+        <where>
+            <if test="employeeid!=null and  employeeid!=''">
+                and employeeId=#{employeeid}
+            </if>
+            <if test="sex!=null and  sex!=''">
+                and sex=#{sex}
+            </if>
+            <if test="idcard!=null and  idcard!=''">
+                and idCard=#{idcard}
+            </if>
+            <if test="address!=null and  address!=''">
+                and address=#{address}
+            </if>
+        </where>
+    </select>
+
+    <!--修员工信息-->
+    <update id="updateEmployee" parameterType="EasybuyEmployee">
+        UPDATE `easybuy`.`easybuy_employee` SET
+        `employeeName` = #{employeename},
+        `password` = #{password},
+        `realName` =#{realname},
+        `sex` = #{sex},
+        `birthday` = #{birthday},
+        `idCard` =#{idcard},
+        `phone` = #{phone},
+        `address` = #{address}
+        WHERE `employeeId` =#{employeeid};
+    </update>
+
+    <insert id="AddEmployee" parameterType="easybuyEmployee">
+       INSERT INTO `easybuy`.`easybuy_employee`
+       (`id`, `employeeId`, `employeeName`, `password`, `realName`, `sex`, `birthday`, `idCard`, `phone`, `address`)  VALUES
+       (null,#{employeeid},#{employeename},#{password},#{realname},#{sex},#{birthday},#{idcard},#{phone},#{address})
+    </insert>
+
+    <!--删除员工信息-->
+    <delete id="delEmployee">
+        delete from easybuy_employee where employeeId in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--根据地址进行模糊查询-->
+    <select id="SelectEmployeeLikeAddress" parameterType="string" resultType="string">
+        select address from  easybuy_employee where  address like  #{address}
+    </select>
+
+
+    <!--根据员工编号查询员工-->
+    <select id="SelectEmployeeByEmployeeid"  parameterType="string" resultType="EasybuyEmployee">
+        select * from easybuy_employee where employeeId=#{employeeid}
+    </select>
+    
+
+</mapper>

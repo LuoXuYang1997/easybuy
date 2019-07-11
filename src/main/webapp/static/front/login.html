@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<link rel="stylesheet" type="text/css" href="css/skin_/login.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.dialog.css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.select.js"></script>
+    <script type="text/javascript" src="js/core.js"></script>
+    <script type="text/javascript" src="js/jquery.dialog.js"></script>
+
+
+
+
+    <script type="text/javascript" src="js/global.js"></script>
+
+<title>用户登录</title>
+</head>
+
+<body>
+<div id="container">
+    <div id="bd">
+    	<div id="main">
+        	<div class="login-box">
+                <div id="logo"></div>
+                <h1></h1>
+                <form action="" method="post" name="myForm" id="loginForm">
+                <div class="input username" >
+                    <label for="userName">用户名</label>
+                    <span></span>
+                    <input type="text" id="userName" />
+                </div>
+                <div class="input psw" id="psw">
+                    <label for="password">密&nbsp;&nbsp;&nbsp;&nbsp;码</label>
+                    <span></span>
+                    <input type="password" id="password" />
+                </div>
+                <div class="input validate" id="validate" style="position:absolute; left:349px; top:266px;">
+                    <div id="vaptchaContainer" style="width:150px;height: 36px;position: relative;left: 70px;">
+                        <div class="vaptcha-init-main">
+                            <div class="vaptcha-init-loading">
+                                <a href="https://www.vaptcha.com" target="_blank">
+                                    <img src="https://cdn.vaptcha.com/vaptcha-loading.gif" />
+                                </a>
+                                <span class="vaptcha-text">Vaptcha启动中...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <script src="https://cdn.vaptcha.com/v2.js"></script>
+                    <script>
+                        var token="";
+                        vaptcha({
+                            //配置参数
+                            vid: '5d1c4ed9fc650e99b8e3cb33', // 验证单元id
+                            type: 'click', // 展现类型 点击式
+                            container: '#vaptchaContainer' // 按钮容器，可为Element 或者 selector
+                        }).then(function (vaptchaObj) {
+                            vaptchaObj.render();// 调用验证实例 vaptchaObj 的 render 方法加载验证按钮
+                            vaptchaObj.listen('pass', function() {
+                                // 验证成功， 进行登录操作
+                                    token= vaptchaObj.getToken();
+
+                                //vaptchaObj.vaptchaReset();
+                            })
+                        })
+                    </script>
+                </div>
+
+                <div id="btn" class="loginButton">
+                    <input type="button" class="button" value="登录"  />
+                </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="exitDialog">
+    <div class="content">
+        <div class="ui-dialog-icon"></div>
+        <div class="ui-dialog-text">
+            <p class="dialog-content">提示信息:</p>
+            <p class="tips" style="color: red;"></p>
+<br><br>
+            <div class="buttons">
+                <input type="button" class="button long2 ok" value="确定" />
+              <!--  <input type="button" class="button long2 normal" value="取消" />-->
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+	var height = $(window).height() > 445 ? $(window).height() : 445;
+	$("#container").height(height);
+	var bdheight = ($(window).height() - $('#bd').height()) / 2 - 20;
+	$('#bd').css('padding-top', bdheight);
+	$(window).resize(function(e) {
+        var height = $(window).height() > 445 ? $(window).height() : 445;
+		$("#container").height(height);
+		var bdheight = ($(window).height() - $('#bd').height()) / 2 - 20;
+		$('#bd').css('padding-top', bdheight);
+    });
+	$('select').select();
+
+	$('.loginButton').click(function(e) {
+
+	    var falg=false;
+
+            if ($("#userName").val().trim() == "") {
+
+                $(".tips").text("请输入用户名");
+                $('.exitDialog').Dialog('open');
+                falg=false;
+                return;
+            }else {
+                falg=true;
+            }
+
+            if ($("#password").val().trim() == "") {
+
+                $(".tips").text("请输入密码");
+                $('.exitDialog').Dialog('open');
+                falg=false;
+                return;
+            }else {
+                falg=true;
+            }
+
+            if(token==""){
+
+                $(".tips").text("请进行人机验证");
+                $('.exitDialog').Dialog('open');
+                falg=false;
+                return;
+            }else{
+                falg=true;
+            }
+            if (falg) {
+                //alert("登陆");
+                $.ajax({
+                        url:"../../EasybuyEmployee/login",
+                        type: "POST",
+                        data:{
+                            employeename:$("#userName").val().trim(),
+                            password:$("#password").val().trim(),
+                            token:token
+                        },
+                        success:function (data) {
+                          //  alert(data);
+                            if (data.state==0) {
+                                window.location="main.html";
+                            }else if(data.state==1){
+                                $(".tips").text(data.data);
+                                $('.exitDialog').Dialog('open');
+                            }
+                        }
+                })
+            }
+
+        });
+
+
+
+    $('.exitDialog').Dialog({
+        title:'提示信息',
+        autoOpen: false,
+        width:400,
+        height:200
+    });
+
+    /*$('.exit').click(function(){
+        $('.exitDialog').Dialog('open');
+    });*/
+
+    $('.exitDialog input[type=button]').click(function(e) {
+        $('.exitDialog').Dialog('close');
+
+        if($(this).hasClass('ok')){
+            window.location.href = "login.html"	;
+        }
+    });
+
+
+
+
+</script>
+
+
+
+
+</html>
